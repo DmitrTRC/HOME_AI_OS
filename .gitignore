@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment / Secrets
+.env
+.env.local
+.env.production
+
+# Docker
+docker-compose.override.yml
+
+# Database
+pgdata/
+*.sql.bak
+
+# Redis
+dump.rdb
+
+# Logs
+logs/
+*.log
+
+# Media uploads (local dev)
+uploads/
+media_store/
+
+# Test / Coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Alembic
+alembic/versions/__pycache__/
+
+# MinIO data
+minio_data/
+
+# Ollama models (large files)
+ollama_data/
+
+# OS
+Thumbs.db
+.DS_Store

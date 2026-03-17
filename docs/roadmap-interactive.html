@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOME AI OS — Interactive Roadmap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0a1a;
+    --surface: #12122a;
+    --surface-hover: #1a1a3e;
+    --border: #2a2a4a;
+    --text: #e0e0f0;
+    --text-dim: #8888aa;
+    --accent: #e94560;
+    --accent-glow: rgba(233, 69, 96, 0.3);
+    --purple: #533483;
+    --blue: #0f3460;
+    --green: #27ae60;
+    --yellow: #f1c40f;
+    --orange: #e67e22;
+    --cyan: #00d2d3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(233,69,96,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233,69,96,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(60px, 60px); }
+  }
+
+</style>
+</head>
+<body>
+<style>
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeInDown 0.8s ease-out;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    width: 80px; height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 0 40px var(--accent-glow);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 40px var(--accent-glow); }
+    50% { box-shadow: 0 0 60px var(--accent-glow), 0 0 80px rgba(83,52,131,0.2); }
+  }
+
+  .header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+  }
+
+  .header p {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  /* Stats bar */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 30px 0 50px;
+    flex-wrap: wrap;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .stat {
+    text-align: center;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-width: 140px;
+    transition: all 0.3s;
+  }
+
+  .stat:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Global progress */
+  .global-progress {
+    margin-bottom: 50px;
+    animation: fadeIn 1s ease-out 0.5s both;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .progress-header h3 { font-weight: 600; font-size: 1.1rem; }
+  .progress-pct {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .progress-bar {
+    height: 12px;
+    background: var(--surface);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--purple), var(--cyan));
+    background-size: 200% 100%;
+    animation: progressShimmer 3s ease-in-out infinite, progressGrow 1.5s ease-out 0.8s both;
+    width: 0%;
+  }
+
+  @keyframes progressShimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes progressGrow {
+    to { width: var(--progress); }
+  }
+</style>
+<style>
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--purple), var(--blue), transparent);
+  }
+
+  /* Phase card */
+  .phase {
+    position: relative;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideIn 0.6s ease-out forwards;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.6s; }
+  .phase:nth-child(2) { animation-delay: 0.8s; }
+  .phase:nth-child(3) { animation-delay: 1.0s; }
+  .phase:nth-child(4) { animation-delay: 1.2s; }
+  .phase:nth-child(5) { animation-delay: 1.4s; }
+  .phase:nth-child(6) { animation-delay: 1.6s; }
+
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .phase-dot {
+    position: absolute;
+    left: -33px;
+    top: 24px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid var(--accent);
+    background: var(--bg);
+    z-index: 2;
+    transition: all 0.3s;
+  }
+
+  .phase.done .phase-dot {
+    background: var(--green);
+    border-color: var(--green);
+    box-shadow: 0 0 12px rgba(39, 174, 96, 0.5);
+  }
+
+  .phase.active .phase-dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 12px var(--accent-glow); }
+    50% { box-shadow: 0 0 24px var(--accent-glow); }
+  }
+
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .phase-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+
+  .phase.done .phase-card { border-left: 4px solid var(--green); }
+  .phase.active .phase-card { border-left: 4px solid var(--accent); }
+
+  .phase-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .phase-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .phase-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 4px 0 0;
+  }
+
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge-done { background: rgba(39,174,96,0.15); color: var(--green); }
+  .badge-active { background: rgba(233,69,96,0.15); color: var(--accent); animation: badgePulse 2s infinite; }
+  .badge-pending { background: rgba(136,136,170,0.1); color: var(--text-dim); }
+
+  @keyframes badgePulse {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 16px rgba(233,69,96,0.2); }
+  }
+
+  .phase-duration {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .phase-desc {
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+</style>
+<style>
+  /* Feature tags */
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .feature-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+  }
+
+  .feature-tag:hover {
+    border-color: var(--accent);
+    background: rgba(233,69,96,0.05);
+  }
+
+  .feature-tag .icon { font-size: 1rem; }
+
+  /* Checklist inside expandable */
+  .phase-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+
+  .phase-card.expanded .phase-details {
+    max-height: 600px;
+  }
+
+  .checklist {
+    list-style: none;
+    padding: 16px 0 0;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+
+  .checklist li {
+    padding: 6px 0;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .checklist li.checked { color: var(--green); }
+  .check-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+  /* Tech stack section */
+  .tech-section {
+    margin: 60px 0;
+    animation: fadeIn 1s ease-out 1.8s both;
+  }
+
+  .tech-section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .tech-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+
+  .tech-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+
+  .tech-icon {
+    font-size: 1.5rem;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+  }
+
+  .tech-name { font-weight: 600; font-size: 0.9rem; }
+  .tech-role { font-size: 0.75rem; color: var(--text-dim); }
+
+  /* MVP section */
+  .mvp-section {
+    margin: 60px 0;
+    padding: 32px;
+    background: linear-gradient(135deg, rgba(233,69,96,0.05), rgba(83,52,131,0.05));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    text-align: center;
+    animation: fadeIn 1s ease-out 2s both;
+  }
+
+  .mvp-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+
+  .mvp-section p {
+    color: var(--text-dim);
+    max-width: 700px;
+    margin: 0 auto 24px;
+    line-height: 1.7;
+  }
+
+  .mvp-criteria {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    text-align: left;
+    margin-top: 24px;
+  }
+
+  .mvp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .mvp-item .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 24px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    animation: fadeIn 1s ease-out 2.2s both;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* Expand hint */
+  .expand-hint {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+
+  @media (max-width: 640px) {
+    .header h1 { font-size: 2rem; }
+    .stats { gap: 12px; }
+    .stat { min-width: 100px; padding: 12px; }
+    .stat-value { font-size: 1.4rem; }
+    .timeline { padding-left: 30px; }
+    .phase-dot { left: -23px; width: 14px; height: 14px; }
+    .phase-title { font-size: 1.2rem; }
+  }
+</style>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">🏠</div>
+    <h1>HOME AI OS</h1>
+    <p>Unified Personal / Family / Project Operations System</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value" style="color:var(--accent)">6</div>
+      <div class="stat-label">Phases</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:var(--cyan)">20</div>
+      <div class="stat-label">Domains</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:var(--green)">1/6</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:var(--yellow)">~5 мес</div>
+      <div class="stat-label">Timeline</div>
+    </div>
+  </div>
+
+
+  <!-- Global Progress -->
+  <div class="global-progress">
+    <div class="progress-header">
+      <h3>Overall Progress</h3>
+      <span class="progress-pct">17%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="--progress: 17%"></div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="timeline">
+
+    <!-- Phase 0 -->
+    <div class="phase done">
+      <div class="phase-dot"></div>
+      <div class="phase-card" onclick="this.classList.toggle('expanded')">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 0</div>
+            <div class="phase-title">🏗 Foundation</div>
+          </div>
+          <span class="phase-badge badge-done">✅ Complete</span>
+        </div>
+        <div class="phase-duration">📅 2-3 weeks · Mar 2026</div>
+        <div class="phase-desc">
+          Скелет проекта, Docker dev environment, базовые абстракции, AI-провайдеры, CI pipeline, документация.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">🐳</span> Docker Compose</span>
+          <span class="feature-tag"><span class="icon">⚡</span> FastAPI</span>
+          <span class="feature-tag"><span class="icon">🐘</span> PostgreSQL + pgvector</span>
+          <span class="feature-tag"><span class="icon">🧠</span> AI Router</span>
+          <span class="feature-tag"><span class="icon">📱</span> Bot skeleton</span>
+          <span class="feature-tag"><span class="icon">🧪</span> CI Pipeline</span>
+        </div>
+        <div class="expand-hint">▼ Click to expand checklist</div>
+        <div class="phase-details">
+          <ul class="checklist">
+            <li class="checked"><span class="check-icon">✅</span> Docker Compose: 6 services</li>
+            <li class="checked"><span class="check-icon">✅</span> FastAPI + health check</li>
+            <li class="checked"><span class="check-icon">✅</span> PostgreSQL 16 + pgvector</li>
+            <li class="checked"><span class="check-icon">✅</span> SQLAlchemy 2.0 async models</li>
+            <li class="checked"><span class="check-icon">✅</span> Alembic migrations</li>
+            <li class="checked"><span class="check-icon">✅</span> Celery + Redis workers</li>
+            <li class="checked"><span class="check-icon">✅</span> AI Provider abstraction</li>
+            <li class="checked"><span class="check-icon">✅</span> Claude + Ollama providers</li>
+            <li class="checked"><span class="check-icon">✅</span> S3 storage (MinIO/Selectel)</li>
+            <li class="checked"><span class="check-icon">✅</span> Telegram bot skeleton</li>
+            <li class="checked"><span class="check-icon">✅</span> GitHub Actions CI</li>
+            <li class="checked"><span class="check-icon">✅</span> CLAUDE.md + Documentation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Phase 1 -->
+    <div class="phase active">
+      <div class="phase-dot"></div>
+      <div class="phase-card" onclick="this.classList.toggle('expanded')">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 1 · MVP</div>
+            <div class="phase-title">📱 Capture + Knowledge + Tasks</div>
+          </div>
+          <span class="phase-badge badge-active">🔄 Next Up</span>
+        </div>
+        <div class="phase-duration">📅 3-4 weeks · Apr 2026</div>
+        <div class="phase-desc">
+          Telegram intake работает: текст, голосовые, фото, документы. AI классифицирует и создаёт заметки/задачи. Веб-доска Kanban. Поиск.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">📱</span> Telegram Intake</span>
+          <span class="feature-tag"><span class="icon">🎤</span> Voice → Text (Whisper)</span>
+          <span class="feature-tag"><span class="icon">🧠</span> AI Classification</span>
+          <span class="feature-tag"><span class="icon">📝</span> Knowledge CRUD</span>
+          <span class="feature-tag"><span class="icon">✅</span> Kanban Board</span>
+          <span class="feature-tag"><span class="icon">🔍</span> FTS Search</span>
+          <span class="feature-tag"><span class="icon">🌐</span> Web UI (HTMX)</span>
+        </div>
+        <div class="expand-hint">▼ Click to expand tasks</div>
+        <div class="phase-details">
+          <ul class="checklist">
+            <li><span class="check-icon">⬜</span> aiogram 3: text, voice, photo, document handlers</li>
+            <li><span class="check-icon">⬜</span> Whisper transcription (voice → text)</li>
+            <li><span class="check-icon">⬜</span> AI classification pipeline</li>
+            <li><span class="check-icon">⬜</span> Knowledge module: models, service, routes</li>
+            <li><span class="check-icon">⬜</span> Tasks module: Kanban logic</li>
+            <li><span class="check-icon">⬜</span> Web UI: Inbox, Notes, Kanban</li>
+            <li><span class="check-icon">⬜</span> Telegram commands: /note, /task, /search</li>
+            <li><span class="check-icon">⬜</span> PostgreSQL FTS (Russian + English)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Phase 2 -->
+    <div class="phase">
+      <div class="phase-dot"></div>
+      <div class="phase-card">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 2</div>
+            <div class="phase-title">📄 Documents + Media + Search</div>
+          </div>
+          <span class="phase-badge badge-pending">⏳ Planned</span>
+        </div>
+        <div class="phase-duration">📅 3-4 weeks · May 2026</div>
+        <div class="phase-desc">
+          Полноценный media pipeline, обработка документов (PDF, DOCX), OCR, семантический поиск, email intake.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">📄</span> PDF/DOCX/XLSX</span>
+          <span class="feature-tag"><span class="icon">🖼</span> Photo OCR</span>
+          <span class="feature-tag"><span class="icon">🎬</span> Video → Audio → Text</span>
+          <span class="feature-tag"><span class="icon">🔍</span> Semantic Search</span>
+          <span class="feature-tag"><span class="icon">📧</span> Mail Intake (IMAP)</span>
+          <span class="feature-tag"><span class="icon">🔗</span> Entity Linking</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase">
+      <div class="phase-dot"></div>
+      <div class="phase-card">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 3</div>
+            <div class="phase-title">🏥 Domain Registries</div>
+          </div>
+          <span class="phase-badge badge-pending">⏳ Planned</span>
+        </div>
+        <div class="phase-duration">📅 3-4 weeks · Jun 2026</div>
+        <div class="phase-desc">
+          Медицинские записи, транспорт, инвентарь, коллекции, regulated items. Reminder engine. Access control.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">🏥</span> Medical Records</span>
+          <span class="feature-tag"><span class="icon">🚗</span> Vehicles</span>
+          <span class="feature-tag"><span class="icon">📸</span> A/V Inventory</span>
+          <span class="feature-tag"><span class="icon">🪙</span> Coin Collection</span>
+          <span class="feature-tag"><span class="icon">🔒</span> Regulated Items</span>
+          <span class="feature-tag"><span class="icon">⏰</span> Reminders</span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Phase 4 -->
+    <div class="phase">
+      <div class="phase-dot"></div>
+      <div class="phase-card">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 4</div>
+            <div class="phase-title">🏔 Operations + Reports</div>
+          </div>
+          <span class="phase-badge badge-pending">⏳ Planned</span>
+        </div>
+        <div class="phase-duration">📅 3-4 weeks · Jul 2026</div>
+        <div class="phase-desc">
+          SAR миссии, DND MAX патрули, полевые журналы. Генератор отчётов, weekly/monthly дайджесты, дашборды.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">🏔</span> SAR Missions</span>
+          <span class="feature-tag"><span class="icon">🛡</span> DND MAX Patrols</span>
+          <span class="feature-tag"><span class="icon">📊</span> Report Builder</span>
+          <span class="feature-tag"><span class="icon">📅</span> Weekly Digest</span>
+          <span class="feature-tag"><span class="icon">📈</span> Dashboards</span>
+          <span class="feature-tag"><span class="icon">📤</span> PDF/DOCX Export</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase">
+      <div class="phase-dot"></div>
+      <div class="phase-card">
+        <div class="phase-top">
+          <div>
+            <div class="phase-number">Phase 5</div>
+            <div class="phase-title">🎵 Creative + Dev + Polish</div>
+          </div>
+          <span class="phase-badge badge-pending">⏳ Planned</span>
+        </div>
+        <div class="phase-duration">📅 2-3 weeks · Aug 2026</div>
+        <div class="phase-desc">
+          Sound Studio, Audiophile Rack, RF Monitoring, Dev Branch. Деплой на Selectel. Финальная стабилизация.
+        </div>
+        <div class="features">
+          <span class="feature-tag"><span class="icon">🎵</span> Sound Studio</span>
+          <span class="feature-tag"><span class="icon">🎧</span> Audiophile Rack</span>
+          <span class="feature-tag"><span class="icon">📡</span> RF Monitoring</span>
+          <span class="feature-tag"><span class="icon">💻</span> Dev Branch</span>
+          <span class="feature-tag"><span class="icon">🚀</span> Selectel Deploy</span>
+          <span class="feature-tag"><span class="icon">🔒</span> Security Audit</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+
+  <!-- Tech Stack -->
+  <div class="tech-section">
+    <h2>⚡ Technology Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-icon">🐍</div>
+        <div><div class="tech-name">Python 3.12+</div><div class="tech-role">Core Language</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <div><div class="tech-name">FastAPI</div><div class="tech-role">Web Framework</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">📱</div>
+        <div><div class="tech-name">aiogram 3</div><div class="tech-role">Telegram Bot</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🐘</div>
+        <div><div class="tech-name">PostgreSQL 16</div><div class="tech-role">Database + FTS</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🔮</div>
+        <div><div class="tech-name">pgvector</div><div class="tech-role">Semantic Search</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">⚡</div>
+        <div><div class="tech-name">Redis 7</div><div class="tech-role">Cache + Queue</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🤖</div>
+        <div><div class="tech-name">Claude API</div><div class="tech-role">Cloud AI</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🦙</div>
+        <div><div class="tech-name">Ollama</div><div class="tech-role">Local AI</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🎤</div>
+        <div><div class="tech-name">Whisper</div><div class="tech-role">Speech-to-Text</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">👁</div>
+        <div><div class="tech-name">Tesseract</div><div class="tech-role">OCR</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">🐳</div>
+        <div><div class="tech-name">Docker</div><div class="tech-role">Containers</div></div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-icon">☁️</div>
+        <div><div class="tech-name">Selectel</div><div class="tech-role">RU Hosting</div></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MVP -->
+  <div class="mvp-section">
+    <h2>🎯 MVP Definition</h2>
+    <p>
+      Minimum Viable Product = <strong>Phase 0 + Phase 1</strong>.<br>
+      Система полезна с первого дня: отправляешь в Telegram → получаешь заметку/задачу в базе.
+    </p>
+    <div class="mvp-criteria">
+      <div class="mvp-item">
+        <span class="num">01</span>
+        <span>Отправляю текст в Telegram → заметка в базе</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">02</span>
+        <span>Отправляю голосовое → транскрипция → заметка</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">03</span>
+        <span>Отправляю фото → OCR → заметка с текстом</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">04</span>
+        <span>/task купить молоко → задача на Kanban-доске</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">05</span>
+        <span>/search молоко → находит все записи по теме</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">06</span>
+        <span>Web UI: inbox, notes, kanban board</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">07</span>
+        <span>AI правильно определяет домен в 80%+ случаев</span>
+      </div>
+      <div class="mvp-item">
+        <span class="num">08</span>
+        <span>docker compose up → всё работает</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>HOME AI OS · Roadmap v1.0 · March 2026</p>
+    <p style="margin-top:8px">
+      <a href="https://github.com/dmitrymorozov/HOME_AI_OS">GitHub</a> ·
+      <a href="ROADMAP.md">Markdown Version</a> ·
+      <a href="MVP.md">MVP Definition</a>
+    </p>
+  </div>
+
+</div><!-- /container -->
+
+</body>
+</html>

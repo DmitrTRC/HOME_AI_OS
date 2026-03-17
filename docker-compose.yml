@@ -1,0 +1,191 @@
+# ============================================================
+# HOME AI OS — Docker Compose (Development)
+# ============================================================
+#
+# Как использовать:
+#   docker compose up          — запустить все сервисы
+#   docker compose up -d       — запустить в фоне (detached)
+#   docker compose down        — остановить все
+#   docker compose logs -f app — смотреть логи приложения
+#   docker compose exec db psql -U dev unified_ops — зайти в БД
+#
+# Что здесь происходит:
+#   Compose поднимает 6 контейнеров (сервисов) которые общаются
+#   друг с другом по внутренней сети Docker. Снаружи доступны
+#   только порты которые мы явно пробросили (ports).
+#
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # app — основное веб-приложение (FastAPI)
+  # ----------------------------------------------------------
+  # Это HTTP API + веб-интерфейс. Слушает порт 8000.
+  # В dev-режиме --reload перезапускает при изменении кода.
+  app:
+    build: .
+    container_name: homeaios-app
+    ports:
+      - "8000:8000"           # localhost:8000 -> контейнер:8000
+    volumes:
+      # Монтируем код напрямую: меняешь файл -> приложение перечитает
+      - ./src:/app/src
+      - ./workers:/app/workers
+      - ./alembic:/app/alembic
+      - ./templates:/app/templates
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # bot — Telegram бот (aiogram 3)
+  # ----------------------------------------------------------
+  # Отдельный процесс который слушает Telegram.
+  # В dev-режиме работает через polling (опрос серверов Telegram).
+  # В prod — через webhook (Telegram сам присылает обновления).
+  bot:
+    build: .
+    container_name: homeaios-bot
+    command: python -m src.intake.adapters.telegram
+    volumes:
+      - ./src:/app/src
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # worker — Celery worker (обработчик фоновых задач)
+  # ----------------------------------------------------------
+  # Берёт задачи из очереди Redis и выполняет:
+  #   - AI-обработка (классификация, суммаризация)
+  #   - Транскрибация аудио (Whisper)
+  #   - OCR изображений
+  #   - Генерация отчётов
+  #   - Отправка уведомлений
+  # Это как отдельный «рабочий поток» но в другом процессе.
+  worker:
+    build: .
+    container_name: homeaios-worker
+    command: celery -A workers.celery_app worker --loglevel=info --concurrency=2
+    volumes:
+      - ./src:/app/src
+      - ./workers:/app/workers
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # beat — Celery Beat (планировщик периодических задач)
+  # ----------------------------------------------------------
+  # Как cron, но внутри Celery. Запускает задачи по расписанию:
+  #   - Еженедельные дайджесты
+  #   - Проверка напоминаний
+  #   - Синхронизация почты
+  beat:
+    build: .
+    container_name: homeaios-beat
+    command: celery -A workers.celery_app beat --loglevel=info
+    volumes:
+      - ./src:/app/src
+      - ./workers:/app/workers
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # db — PostgreSQL 16 с расширением pgvector
+  # ----------------------------------------------------------
+  # Основная база данных. pgvector добавляет тип vector()
+  # для хранения embeddings (числовых представлений текста),
+  # что нужно для семантического поиска.
+  #
+  # Данные хранятся в Docker volume 'pgdata' — переживают
+  # перезапуск контейнера.
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: homeaios-db
+    ports:
+      - "5432:5432"           # Можно подключиться из IDE/psql
+    environment:
+      POSTGRES_DB: unified_ops
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev_password_change_me
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Скрипт инициализации: создаёт расширения при первом запуске
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d unified_ops"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # redis — Redis 7 (кэш + брокер очередей)
+  # ----------------------------------------------------------
+  # Используется для:
+  #   1. Celery broker — передаёт задачи от app к worker
+  #   2. Celery result backend — хранит результаты задач
+  #   3. Кэш горячих данных (сессии, частые запросы)
+  redis:
+    image: redis:7-alpine
+    container_name: homeaios-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # minio — S3-совместимое хранилище (замена Selectel S3 для dev)
+  # ----------------------------------------------------------
+  # MinIO — локальный аналог Amazon S3 / Selectel S3.
+  # Сюда складываем медиа-файлы, документы, оригиналы.
+  # В продакшне заменяется на Selectel S3 (просто меняем URL в .env).
+  # Веб-консоль: http://localhost:9001 (minioadmin/minioadmin)
+  minio:
+    image: minio/minio
+    container_name: homeaios-minio
+    ports:
+      - "9000:9000"           # S3 API
+      - "9001:9001"           # Web console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - miniodata:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+# ----------------------------------------------------------
+# Volumes — именованные тома для хранения данных
+# ----------------------------------------------------------
+# Данные в volumes переживают docker compose down.
+# Удалить всё: docker compose down -v (ОСТОРОЖНО!)
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:

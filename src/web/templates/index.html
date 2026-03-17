@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}HOME AI OS — Dashboard{% endblock %}
+
+{% block content %}
+<h1>HOME AI OS</h1>
+<p>Unified Personal / Family / Project Operations System</p>
+
+<div class="card" style="margin-top: 24px;">
+    <h2>Статус системы</h2>
+    <div hx-get="/api/v1/health" hx-trigger="load" hx-target="#health-status">
+        <span class="htmx-indicator">Проверяю...</span>
+    </div>
+    <div id="health-status"></div>
+</div>
+
+<div class="card">
+    <h2>Домены</h2>
+    <p>Система поддерживает следующие домены:</p>
+    <ul style="margin-top: 12px; padding-left: 24px;">
+        <li><strong>Knowledge</strong> — заметки, идеи, исследования</li>
+        <li><strong>Tasks</strong> — Kanban-доска, задачи, решения</li>
+        <li><strong>Medical</strong> — медицинские записи (защищённый контур)</li>
+        <li><strong>Vehicles</strong> — транспорт, страховки, сервис</li>
+        <li><strong>Registry</strong> — инвентарь, коллекции</li>
+        <li><strong>Operations</strong> — SAR, DND MAX, полевые журналы</li>
+        <li><strong>Creative</strong> — Sound Studio, Audiophile Rack</li>
+        <li><strong>Dev</strong> — проекты, решения, changelogs</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h2>Следующие шаги (Phase 1)</h2>
+    <ul style="padding-left: 24px;">
+        <li>Telegram bot — приём текста, голосовых, фото</li>
+        <li>Knowledge module — создание и поиск заметок</li>
+        <li>Tasks module — Kanban-доска</li>
+        <li>Inbox — обзор входящих и AI-классификация</li>
+    </ul>
+</div>
+{% endblock %}
