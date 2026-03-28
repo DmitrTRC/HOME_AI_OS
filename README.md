@@ -34,7 +34,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/dmitrymorozov/HOME_AI_OS?style=flat-square&color=blue" alt="License">
+  <img src="https://img.shields.io/github/license/DmitrTRC/HOME_AI_OS?style=flat-square&color=blue" alt="License">
+  <img src="https://img.shields.io/github/actions/workflow/status/DmitrTRC/HOME_AI_OS/ci.yml?style=flat-square&label=CI" alt="CI">
   <img src="https://img.shields.io/badge/status-Phase_0_Foundation-yellow?style=flat-square" alt="Status">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs Welcome">
   <img src="https://img.shields.io/badge/code_style-ruff-000000?style=flat-square" alt="Code Style">
@@ -200,7 +201,7 @@
 
 ```bash
 # 1. Clone & configure
-git clone https://github.com/your-username/HOME_AI_OS.git
+git clone https://github.com/DmitrTRC/HOME_AI_OS.git
 cd HOME_AI_OS
 cp .env.example .env
 # Edit .env — add TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY
