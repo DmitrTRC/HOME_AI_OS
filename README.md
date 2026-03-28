@@ -79,40 +79,39 @@
 ## 🏗 Architecture
 
 ```
-                        ╔══════════════════════════════════╗
-                        ║         INTAKE LAYER             ║
-                        ║  📱 Telegram  📧 Mail  📁 Upload ║
-                        ╚═══════════════╤══════════════════╝
-                                        │
-                        ╔═══════════════╧══════════════════╗
-                        ║      🔀 GATEWAY / AI ROUTER      ║
-                        ║   FastAPI + Celery + AI Classify  ║
-                        ╚═══════╤══════════════════╤═══════╝
-                                │                  │
-                    ┌───────────┘                  └───────────┐
-                    ▼                                          ▼
-        ╔═══════════════════╗                    ╔════════════════════╗
-        ║   ⚡ SYNC PATH    ║                    ║   🔄 ASYNC PATH    ║
-        ║  CRUD, Search,    ║                    ║  AI Processing,    ║
-        ║  Quick Operations ║                    ║  Transcription,    ║
-        ╚════════╤══════════╝                    ║  OCR, Reports      ║
-                 │                               ╚═════════╤══════════╝
-                 └──────────────┬───────────────────────────┘
-                                ▼
-        ╔══════════════════════════════════════════════════════╗
-        ║                 📦 DOMAIN MODULES                    ║
-        ║                                                      ║
-        ║  📝 Knowledge  ✅ Tasks    🏥 Medical   🚗 Vehicles  ║
-        ║  📋 Registry   🔍 Search   📊 Reports   🎵 Creative  ║
-        ║  💻 Dev        🏔 SAR      🛡 DND MAX   📡 RF Mon    ║
-        ╚══════════════════════╤═══════════════════════════════╝
-                               ▼
-        ╔══════════════════════════════════════════════════════╗
-        ║                  💾 DATA LAYER                       ║
-        ║                                                      ║
-        ║  🐘 PostgreSQL 16   📦 S3 Storage    ⚡ Redis 7     ║
-        ║     + pgvector        (Selectel)       (cache/queue) ║
-        ╚══════════════════════════════════════════════════════╝
+                ╔══════════════════════════════════════╗
+                ║            INTAKE LAYER              ║
+                ║   Telegram | Mail | Upload | API     ║
+                ╚═════════════════╤════════════════════╝
+                                  │
+                ╔═════════════════╧════════════════════╗
+                ║        GATEWAY / AI ROUTER           ║
+                ║   FastAPI + Celery + AI Classify     ║
+                ╚═══════╤════════════════════╤═════════╝
+                        │                    │
+                        v                    v
+  ╔═════════════════════╗      ╔═════════════════════╗
+  ║     SYNC PATH       ║      ║     ASYNC PATH      ║
+  ║   CRUD, Search,     ║      ║   AI Processing,    ║
+  ║   Quick Operations  ║      ║   Transcription,    ║
+  ╚══════════╤══════════╝      ║   OCR, Reports      ║
+             │                 ╚══════════╤══════════╝
+             └─────────────┬──────────────┘
+                           v
+  ╔═════════════════════════════════════════════════════╗
+  ║                DOMAIN MODULES                       ║
+  ║                                                     ║
+  ║   Knowledge | Tasks   | Medical  | Vehicles         ║
+  ║   Registry  | Search  | Reports  | Creative         ║
+  ║   Dev       | SAR     | DND MAX  | RF Mon           ║
+  ╚══════════════════════════╤══════════════════════════╝
+                             v
+  ╔═════════════════════════════════════════════════════╗
+  ║                  DATA LAYER                         ║
+  ║                                                     ║
+  ║   PostgreSQL 16   |  S3 Storage   |  Redis 7        ║
+  ║   + pgvector      |  (Selectel)   |  (cache/queue)  ║
+  ╚═════════════════════════════════════════════════════╝
 ```
 
 
