@@ -7,6 +7,9 @@
 # Как работает: make <цель> → выполняется рецепт (команды ниже)
 # ============================================================
 
+# Определяем команду docker compose (v2 без дефиса, v1 с дефисом)
+DOCKER_COMPOSE := $(shell docker compose version > /dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
+
 .PHONY: help up down logs test lint migrate shell db-shell redis-shell
 
 # Показать справку (make без аргументов)
@@ -43,7 +46,7 @@ help:
 # --- Запуск ---
 
 up:
-	docker compose up -d
+	$(DOCKER_COMPOSE) up -d
 	@echo ""
 	@echo "✓ Сервисы запущены:"
 	@echo "  App:   http://localhost:8000"
@@ -52,57 +55,57 @@ up:
 	@echo ""
 
 down:
-	docker compose down
+	$(DOCKER_COMPOSE) down
 
 restart:
-	docker compose restart
+	$(DOCKER_COMPOSE) restart
 
 logs:
-	docker compose logs -f
+	$(DOCKER_COMPOSE) logs -f
 
 logs-app:
-	docker compose logs -f app
+	$(DOCKER_COMPOSE) logs -f app
 
 logs-bot:
-	docker compose logs -f bot
+	$(DOCKER_COMPOSE) logs -f bot
 
 logs-worker:
-	docker compose logs -f worker
+	$(DOCKER_COMPOSE) logs -f worker
 
 # --- Разработка ---
 
 test:
-	docker compose exec app pytest -v
+	$(DOCKER_COMPOSE) exec app pytest -v
 
 lint:
-	docker compose exec app ruff check src/ workers/ tests/
+	$(DOCKER_COMPOSE) exec app ruff check src/ workers/ tests/
 
 format:
-	docker compose exec app ruff format src/ workers/ tests/
+	$(DOCKER_COMPOSE) exec app ruff format src/ workers/ tests/
 
 # Применить все миграции к БД
 migrate:
-	docker compose exec app alembic upgrade head
+	$(DOCKER_COMPOSE) exec app alembic upgrade head
 
 # Создать новую миграцию (передай сообщение через MSG=)
 # Пример: make migration MSG="add notes table"
 migration:
-	docker compose exec app alembic revision --autogenerate -m "$(MSG)"
+	$(DOCKER_COMPOSE) exec app alembic revision --autogenerate -m "$(MSG)"
 
 # --- Доступ ---
 
 shell:
-	docker compose exec app bash
+	$(DOCKER_COMPOSE) exec app bash
 
 db-shell:
-	docker compose exec db psql -U dev unified_ops
+	$(DOCKER_COMPOSE) exec db psql -U dev unified_ops
 
 redis-shell:
-	docker compose exec redis redis-cli
+	$(DOCKER_COMPOSE) exec redis redis-cli
 
 # --- Очистка ---
 
 # ВНИМАНИЕ: удаляет все данные из БД, Redis, MinIO!
 clean:
-	docker compose down -v
+	$(DOCKER_COMPOSE) down -v
 	@echo "✓ Все volumes удалены"
