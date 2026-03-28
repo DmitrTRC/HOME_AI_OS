@@ -15,14 +15,12 @@ FastAPI — это современный async web-фреймворк для Py
 - http://localhost:8000/redoc — ReDoc (читаемая)
 """
 
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from src.core.config import settings

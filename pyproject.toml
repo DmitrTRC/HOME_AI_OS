@@ -30,21 +30,11 @@ dependencies = [
     # Telegram Bot
     "aiogram>=3.10.0",
 
-    # AI - Anthropic
+    # AI - Anthropic (lightweight client)
     "anthropic>=0.34.0",
-
-    # AI - Ollama (local models)
-    "ollama>=0.3.0",
-
-    # AI - Transcription
-    "faster-whisper>=1.0.0",
-
-    # AI - Embeddings
-    "sentence-transformers>=3.0.0",
 
     # OCR
     "pytesseract>=0.3.10",
-    # easyocr — install separately, heavy deps
 
     # S3
     "boto3>=1.34.0",
@@ -72,6 +62,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Heavy AI dependencies — install separately: pip install -e ".[ai]"
+# These pull PyTorch (~2 GB), not needed for basic operation or CI
+ai = [
+    "ollama>=0.3.0",
+    "faster-whisper>=1.0.0",
+    "sentence-transformers>=3.0.0",
+    # "easyocr>=1.7.0",  # uncomment when needed
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
@@ -85,7 +83,7 @@ dev = [
 
 [build-system]
 requires = ["setuptools>=68.0"]
-build-backend = "setuptools.backends._legacy:_Backend"
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -5,7 +5,8 @@ Pydantic-модели которые описывают ЧТО мы просим
 и ЧТО получаем в ответ. Независимо от провайдера (Claude, Ollama, Whisper).
 """
 
-from enum import Enum
+from enum import Enum, StrEnum
+
 from pydantic import BaseModel, Field
 
 
@@ -17,7 +18,7 @@ class SensitivityLevel(int, Enum):
     RESTRICTED = 3   # Ограниченные — только локальный AI
 
 
-class AITaskType(str, Enum):
+class AITaskType(StrEnum):
     """Типы AI-задач (из ТЗ: FR-AI-006)."""
     CLASSIFY = "classify"           # Определить домен/тип
     EXTRACT = "extract"             # Извлечь сущности из текста

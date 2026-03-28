@@ -17,6 +17,7 @@ structlog vs обычный logging:
 """
 
 import logging
+
 import structlog
 
 from src.core.config import settings

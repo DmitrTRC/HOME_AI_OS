@@ -14,10 +14,10 @@ JWT (JSON Web Token) — подписанный токен который кли
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
-from jose import JWTError, jwt
 import structlog
+from jose import JWTError, jwt
 
 from src.core.config import settings
 
@@ -38,7 +38,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expires_delta: Время жизни (по умолчанию 24 часа)
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
+    expire = datetime.now(UTC) + (
         expires_delta or timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
     )
     to_encode.update({"exp": expire})

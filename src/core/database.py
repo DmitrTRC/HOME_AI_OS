@@ -25,7 +25,6 @@ from sqlalchemy.orm import DeclarativeBase
 
 from src.core.config import settings
 
-
 # Engine — пул соединений к БД
 # echo=True в dev-режиме покажет все SQL-запросы в логах
 engine = create_async_engine(

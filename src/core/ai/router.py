@@ -25,7 +25,6 @@ from src.core.ai.schemas import (
     SensitivityLevel,
     SummarizeRequest,
     SummarizeResult,
-    TranscribeResult,
 )
 
 logger = structlog.get_logger()

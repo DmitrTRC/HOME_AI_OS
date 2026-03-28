@@ -11,7 +11,7 @@ Health check — стандартный паттерн: эндпоинт /health
 - Просто проверить что всё работает: curl localhost:8000/api/v1/health
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -50,7 +50,7 @@ async def health_check():
         status="ok",
         version="0.1.0",
         environment=settings.APP_ENV,
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
     )
 
 

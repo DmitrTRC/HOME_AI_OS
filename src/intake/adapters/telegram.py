@@ -43,8 +43,8 @@ async def main():
 
     try:
         from aiogram import Bot, Dispatcher, types
-        from aiogram.filters import Command
         from aiogram.enums import ParseMode
+        from aiogram.filters import Command
     except ImportError:
         logger.error("aiogram_not_installed", hint="pip install aiogram")
         sys.exit(1)

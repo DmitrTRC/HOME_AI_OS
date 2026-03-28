@@ -13,6 +13,7 @@
 """
 
 from functools import lru_cache
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -95,7 +96,7 @@ class Settings(BaseSettings):
     LOG_FORMAT: str = "console"  # "console" для dev, "json" для prod
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     """
     Синглтон настроек.

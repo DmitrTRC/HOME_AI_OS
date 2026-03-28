@@ -15,8 +15,6 @@ AI-задачи для фоновой обработки.
     process_inbox_item.delay(inbox_item_id)  # .delay() = "поставь в очередь"
 """
 
-import asyncio
-
 import structlog
 
 from workers.celery_app import celery_app
