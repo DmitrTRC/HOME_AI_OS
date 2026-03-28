@@ -26,6 +26,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Рабочая директория внутри контейнера
 WORKDIR /app
 
+# Чтобы Python находил наши модули (src.core, src.web, и т.д.)
+ENV PYTHONPATH=/app
+
+# PYTHONPATH — чтобы Python находил наши модули (src, workers)
+ENV PYTHONPATH=/app
+
 # Копируем файл зависимостей отдельно (для кэширования Docker-слоёв)
 # Если pyproject.toml не изменился — Docker не будет пересобирать этот слой
 COPY pyproject.toml .
