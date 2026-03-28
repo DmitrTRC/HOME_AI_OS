@@ -124,9 +124,9 @@ services:
     ports:
       - "5432:5432"           # Можно подключиться из IDE/psql
     environment:
-      POSTGRES_DB: unified_ops
-      POSTGRES_USER: dev
-      POSTGRES_PASSWORD: dev_password_change_me
+      POSTGRES_DB: ${POSTGRES_DB:-unified_ops}
+      POSTGRES_USER: ${POSTGRES_USER:-dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password_change_me}
     volumes:
       - pgdata:/var/lib/postgresql/data
       # Скрипт инициализации: создаёт расширения при первом запуске
